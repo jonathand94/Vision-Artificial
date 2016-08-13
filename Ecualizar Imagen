@@ -1,0 +1,46 @@
+%%  Ecualizar un histograma de imagen
+
+img = imread('Resources/shapes.jpg');
+img = rgb2gray(img);
+
+% Calcular la frecuencia de cada pixel
+num_px = size(img, 1) * size(img, 2);
+
+% Calcular la probabilidad de cada pixel
+new_img = uint8(zeros(size(img, 1), size(img, 2)));
+freq = zeros(256, 1);
+probF = zeros(256, 1);
+probC = zeros(256, 1);
+acum = zeros(256, 1);
+salida = zeros(256, 1);
+
+for i = 1 :1: size(img, 1)
+    for j= 1 :1: size(img, 2)
+        valoraux = img(i, j);
+        freq(valoraux) = freq(valoraux)+1;
+        probF(valoraux) = freq(valoraux)/num_px;
+    end
+end
+
+% Encontrar el histograma acumulativo de cada pixel (sus frequencias)
+suma = 0;
+barras = 255;
+
+for i = 1 : size(probF)
+    suma = suma + freq(i);
+    acum(i) = suma;
+    probC(i) = acum(i) / num_px;
+    salida(i) = round(probC(i)*barras);
+end
+
+% Calcular el valor final de cada pixel en función de su probabilidad
+% acumulativa
+for i = 1 : size(img, 1)
+    for j= 1 : size(img, 2)
+        new_img(i, j) = salida(img(i, j));
+    end
+end
+
+% Mostramos la imagen ecualizada
+figure 1
+imshow(new_img);
